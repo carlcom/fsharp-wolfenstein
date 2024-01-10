@@ -72,14 +72,16 @@ initialisationPromise
       if not ke.repeat then
         let controlState = ke.code |> controlStateFromKeyCode
         if controlState <> ControlState.None then
-          ke.preventDefault()
-          currentGameState <- controlStateHandler currentGameState controlState
+          if currentGameState.ControlState &&& controlState = ControlState.None then // Only flip it if it's Off
+            ke.preventDefault()
+            currentGameState <- controlStateHandler currentGameState controlState
     )
     window.onkeyup <- (fun ke ->
       let controlState = ke.code |> controlStateFromKeyCode
       if controlState <> ControlState.None then
-        ke.preventDefault()
-        currentGameState <- controlStateHandler currentGameState controlState
+        if currentGameState.ControlState &&& controlState <> ControlState.None then // Only flip it if it's On
+          ke.preventDefault()
+          currentGameState <- controlStateHandler currentGameState controlState
     )
     window.requestAnimationFrame wrappedGameLoop |> ignore
   )
